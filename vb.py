@@ -61,3 +61,4 @@ Label(root, text='Enter Course', bg='#7FFF00', font=('arial', 12, 'normal')).pla
 
 
 root.mainloop()
+
