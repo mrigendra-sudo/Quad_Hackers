@@ -73,7 +73,9 @@ class displayCounter():
         except Exception as e: #ValueError:
             print(e)
         # Use tkinter's after() function to call tick every second
-        self.id=self.window.after(1000, self.tick)
+        if variable == 1:
+            self.id = self.window.after(1000, self.tick)
+
 
     # Set the state according to the isWorking boolean
     def time_up(self):
@@ -113,7 +115,7 @@ def back():
         os.system("TASKKILL /F /IM spotify.exe")
         os.system("TASKKILL /F /IM steam.exe")
 
-        time.sleep(10)
+        time.sleep(1)
 def thread1():
     Thread(target=instantiate_displayCounter).start()
 
@@ -124,6 +126,7 @@ def thread2():
     a = ()
     Thread(target=back,args=a).start()
 def end():
+
     global variable
     variable = 0
 
