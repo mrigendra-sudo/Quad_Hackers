@@ -2,7 +2,7 @@ import tkinter as tk
 import winsound
 import time
 import os
-
+from threading import  Thread
 '''
 Pomodoro timer created to require little user interaction
 and remove the need to have a browser open
@@ -12,7 +12,7 @@ and remove the need to have a browser open
 timeHours, timeMinutes, timeSeconds = 0, 0, 0
 # Initial number of displayCounter instances
 instances = 0
-
+variable=True
 # displayCounter Object
 class displayCounter():
     def __init__(self, window):
@@ -107,6 +107,25 @@ def instantiate_displayCounter():
         instances += 1
     else:
         pass
+def back():
+    while variable==1:
+        os.system("TASKKILL /F /IM notepad.exe")
+        os.system("TASKKILL /F /IM spotify.exe")
+        os.system("TASKKILL /F /IM steam.exe")
+
+        time.sleep(10)
+def thread1():
+    Thread(target=instantiate_displayCounter).start()
+
+
+def thread2():
+    global variable
+    variable = 1
+    a = ()
+    Thread(target=back,args=a).start()
+def end():
+    global variable
+    variable = 0
 
 # TKINTER ---------------------
 # SETUP WINDOW
@@ -146,8 +165,13 @@ breakMinutesEntry.grid(column=4, row=2)
 breakSecondsEntry = tk.Entry()
 breakSecondsEntry.grid(column=6, row=2)
 # BUTTON
-button1 = tk.Button(text="Start", font=("Times New Roman", 12), command=instantiate_displayCounter)
+button1 = tk.Button(text="Start", font=("Times New Roman", 12), command=thread1)
 button1.grid(column=0, row=3)
+button2 = tk.Button(text="close apps", font=("Times New Roman", 12), command=thread2)
+button2.grid(column=1, row=3)
+button3 = tk.Button(text="end", font=("Times New Roman", 12), command=end)
+button3.grid(column=5, row=3)
+
 # Use a class with this method to fix the error from python sending self
 #button1.bind('<Return>', instantiate_displayCounter)
 # MAINLOOP
