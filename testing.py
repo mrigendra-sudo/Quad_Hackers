@@ -2,21 +2,26 @@ import tkinter as tk
 import winsound
 import time
 import os
-from threading import  Thread
+from threading import Thread
+import vlc
+import pafy
+#from Welcome import URL
 '''
 Pomodoro timer created to require little user interaction
 and remove the need to have a browser open
 '''
 
-#Initial HMS variables
+# Initial HMS variables
 timeHours, timeMinutes, timeSeconds = 0, 0, 0
 # Initial number of displayCounter instances
 instances = 0
-variable=True
+variable = True
+
+
 # displayCounter Object
 class displayCounter():
     def __init__(self, window):
-        self.window=window
+        self.window = window
         self.notifLabel = tk.Label(text="")
         self.notifLabel.grid(column=2, row=3)
         self.workHours, self.workMinutes, self.workSeconds, self.breakHours, self.breakMinutes, self.breakSeconds = hmsdata
@@ -55,27 +60,26 @@ class displayCounter():
                             except Exception as e:
                                 print(e)
                     self.isWorking = not self.isWorking
-                    if(self.isWorking):
+                    if (self.isWorking):
                         timeHours, timeMinutes, timeSeconds = self.workHours, self.workMinutes, self.workSeconds
                     else:
                         timeHours, timeMinutes, timeSeconds = self.breakHours, self.breakMinutes, self.breakSeconds
                 else:
-                    if(timeSeconds > 0):
+                    if (timeSeconds > 0):
                         timeSeconds -= 1
-                    elif(timeMinutes > 0):
+                    elif (timeMinutes > 0):
                         timeMinutes -= 1
                         timeSeconds = 59
-                    elif(timeHours > 0):
+                    elif (timeHours > 0):
                         timeHours -= 1
                         timeMinutes = 59
                         timeSeconds = 59
         # Print exception if it occurs
-        except Exception as e: #ValueError:
+        except Exception as e:  # ValueError:
             print(e)
         # Use tkinter's after() function to call tick every second
         if variable == 1:
             self.id = self.window.after(1000, self.tick)
-
 
     # Set the state according to the isWorking boolean
     def time_up(self):
@@ -85,13 +89,15 @@ class displayCounter():
             return ('Take a break!', 'BreakSound')
         # Else, the user is not working
         else:
-            return('Get to work!', 'workSound')
+            return ('Get to work!', 'workSound')
 
-# Function to instantiate the counter and allow the times to be set while limiting counter to 1 instance
+
+
 def instantiate_displayCounter():
     global instances
     global hmsdata
-    hmsdata = [workHoursEntry, workMinutesEntry, workSecondsEntry, breakHoursEntry, breakMinutesEntry, breakSecondsEntry]
+    hmsdata = [workHoursEntry, workMinutesEntry, workSecondsEntry, breakHoursEntry, breakMinutesEntry,
+               breakSecondsEntry]
     for i, data in enumerate(hmsdata):
         try:
             hmsdata[i] = int(hmsdata[i].get())
@@ -104,40 +110,67 @@ def instantiate_displayCounter():
             hmsdata[i] = 60
     print("Input = " + str(hmsdata))
     # Only allow one instance of the counter
-    if(instances == 0):
+    if (instances == 0):
         d = displayCounter(window)
         instances += 1
     else:
         pass
+
+
 def back():
-    while variable==1:
+    while variable == 1:
         os.system("TASKKILL /F /IM notepad.exe")
         os.system("TASKKILL /F /IM spotify.exe")
         os.system("TASKKILL /F /IM steam.exe")
 
         time.sleep(1)
+
+
 def thread1():
+    global variable
+    variable = 1
     Thread(target=instantiate_displayCounter).start()
 
 
 def thread2():
-    global variable
-    variable = 1
     a = ()
-    Thread(target=back,args=a).start()
-def end():
+    Thread(target=back, args=a).start()
 
+
+def end():
     global variable
     variable = 0
+
+
+url = "https://www.youtube.com/watch?v=SvWfZGhjwGs"
+video = pafy.new(url)
+best = video.getbestaudio()
+
+media = vlc.MediaPlayer(best.url)
+
+
+def play():
+    media.play()
+    '''while True:
+        pass'''
+
+
+def pause():
+    media.pause()
+
+def thread3():
+    Thread(target=play).start()
+def thread4():
+    Thread(target=pause).start()
 
 # TKINTER ---------------------
 # SETUP WINDOW
 window = tk.Tk()
 window.title("Python Pomodoro")
-window.geometry("500x125")
+window.geometry("620x125")
 # LABEL
 headLabel = tk.Label(text="Pomodoro", font=("Times New Roman", 20))
-headLabel.grid(columnspan=7, row=0,)
+headLabel.grid(columnspan=7, row=0, )
 workTextLabel = tk.Label(text="Work length")
 workTextLabel.grid(column=0, row=1)
 breakTextLabel = tk.Label(text="Break length")
@@ -174,8 +207,12 @@ button2 = tk.Button(text="close apps", font=("Times New Roman", 12), command=thr
 button2.grid(column=1, row=3)
 button3 = tk.Button(text="end", font=("Times New Roman", 12), command=end)
 button3.grid(column=5, row=3)
+button4 = tk.Button(text="play", font=("Times New Roman", 12), command=thread3)
+button4.grid(column=3, row=3)
+button5 = tk.Button(text="pause", font=("Times New Roman", 12), command=thread4)
+button5.grid(column=4, row=3)
 
 # Use a class with this method to fix the error from python sending self
-#button1.bind('<Return>', instantiate_displayCounter)
+# button1.bind('<Return>', instantiate_displayCounter)
 # MAINLOOP
 window.mainloop()
